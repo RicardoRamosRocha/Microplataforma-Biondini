@@ -1,0 +1,14 @@
+@{
+    ViewData["Title"] = "Admin";
+}
+
+<h1>Microplataforma Biondini</h1>
+
+<p>Área administrativa.</p>
+
+<form action="/Account/Logout" method="post">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-outline-danger">
+        Sair
+    </button>
+</form>

@@ -1,11 +1,14 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microplataforma.Domain.Entities;
+using Microplataforma.Infrastructure.Identity;
 
 namespace Microplataforma.Infrastructure.Persistence;
 
 public static class DbInitializer
 {
-    public static async Task SeedAsync(ApplicationDbContext context)
+    public static async Task SeedCandidatesAsync(ApplicationDbContext context)
     {
         if (await context.Candidates.AnyAsync())
             return;
@@ -31,5 +34,65 @@ public static class DbInitializer
             });
 
         await context.SaveChangesAsync();
+    }
+
+    public static async Task SeedAdminAsync(
+        UserManager<ApplicationUser> userManager,
+        RoleManager<IdentityRole> roleManager,
+        IConfiguration configuration)
+    {
+        const string roleName = "Admin";
+
+        if (!await roleManager.RoleExistsAsync(roleName))
+        {
+            var roleResult = await roleManager.CreateAsync(
+                new IdentityRole(roleName));
+
+            if (!roleResult.Succeeded)
+                throw new InvalidOperationException(
+                    "Não foi possível criar a role Admin.");
+        }
+
+        var email = configuration["Admin:Email"];
+        var password = configuration["Admin:Password"];
+
+        if (string.IsNullOrWhiteSpace(email) ||
+            string.IsNullOrWhiteSpace(password))
+        {
+            return;
+        }
+
+        var user = await userManager.FindByEmailAsync(email);
+
+        if (user is null)
+        {
+            user = new ApplicationUser
+            {
+                UserName = email,
+                Email = email,
+                EmailConfirmed = true
+            };
+
+            var userResult = await userManager.CreateAsync(user, password);
+
+            if (!userResult.Succeeded)
+            {
+                var errors = string.Join(
+                    "; ",
+                    userResult.Errors.Select(error => error.Description));
+
+                throw new InvalidOperationException(
+                    $"Não foi possível criar o usuário administrador: {errors}");
+            }
+        }
+
+        if (!await userManager.IsInRoleAsync(user, roleName))
+        {
+            var roleResult = await userManager.AddToRoleAsync(user, roleName);
+
+            if (!roleResult.Succeeded)
+                throw new InvalidOperationException(
+                    "Não foi possível atribuir a role Admin ao usuário.");
+        }
     }
 }
