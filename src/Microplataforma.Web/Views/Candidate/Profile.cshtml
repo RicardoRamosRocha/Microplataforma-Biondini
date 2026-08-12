@@ -1,11 +1,85 @@
 @model Microplataforma.Domain.Entities.Candidate
 
 @{
-    ViewData["Title"] = Model.Name;
+    ViewData["Title"] = $"{Model.Name} | {Model.Office}";
+    var initial = string.IsNullOrWhiteSpace(Model.Name) ? "B" : Model.Name[..1].ToUpperInvariant();
+    var hasHeroImage = !string.IsNullOrWhiteSpace(Model.HeroImageUrl);
+    var profileImage = !string.IsNullOrWhiteSpace(Model.PhotoUrl) ? Model.PhotoUrl : Model.HeroImageUrl;
+    var biography = string.IsNullOrWhiteSpace(Model.Biography) ? Model.ShortBiography : Model.Biography;
 }
 
-<h1>@Model.Name</h1>
+<article class="candidate-profile">
+    <section class="candidate-hero@(hasHeroImage ? " candidate-hero--with-image" : string.Empty)"
+             aria-labelledby="candidate-name"
+             @if (hasHeroImage)
+             {
+                 <text>style="--candidate-hero-image: url('@Model.HeroImageUrl')"</text>
+             }>
+        <div class="public-shell candidate-hero-grid">
+            <div class="candidate-hero-copy">
+                <a class="back-home-link" asp-controller="Home" asp-action="Index"><span aria-hidden="true">←</span> Voltar para a Home</a>
+                <p class="eyebrow">Perfil oficial</p>
+                <p class="candidate-office">@Model.Office</p>
+                <h1 id="candidate-name">@Model.Name</h1>
+                @if (!string.IsNullOrWhiteSpace(Model.ShortBiography))
+                {
+                    <p class="candidate-intro">@Model.ShortBiography</p>
+                }
+                <div class="candidate-actions" aria-label="Atalhos do perfil">
+                    <a class="btn btn-gold" href="#trajetoria">Conheça a trajetória</a>
+                    <a class="btn candidate-secondary-action" href="#acompanhe">Acompanhe a atuação</a>
+                </div>
+            </div>
+            <div class="candidate-portrait" aria-label="Foto de @Model.Name">
+                @if (!string.IsNullOrWhiteSpace(profileImage))
+                {
+                    <img src="@profileImage" alt="@Model.Name" />
+                }
+                else
+                {
+                    <span aria-hidden="true">@initial</span>
+                    <small>Foto oficial</small>
+                }
+            </div>
+        </div>
+    </section>
 
-<p>@Model.Office</p>
+    <section id="trajetoria" class="public-section candidate-story-section" aria-labelledby="trajectory-title">
+        <div class="public-shell candidate-story-grid">
+            <div class="section-heading"><p class="eyebrow">Biografia</p><h2 id="trajectory-title">Uma trajetória de trabalho e proximidade</h2></div>
+            <div class="candidate-biography">
+                @if (!string.IsNullOrWhiteSpace(biography))
+                {
+                    <p>@biography</p>
+                }
+                else
+                {
+                    <p>As informações sobre a trajetória de @Model.Name serão reunidas neste perfil oficial.</p>
+                }
+                <p class="candidate-biography-note">Este é o espaço oficial para acompanhar a trajetória, a atuação e as iniciativas de @Model.Name.</p>
+            </div>
+        </div>
+    </section>
 
-<p>@Model.ShortBiography</p>
+    <section id="acompanhe" class="public-section candidate-access-section" aria-labelledby="candidate-access-title">
+        <div class="public-shell">
+            <div class="section-heading candidate-access-heading">
+                <div><p class="eyebrow">Acompanhe</p><h2 id="candidate-access-title">Atuação em um só lugar</h2></div>
+                <p>Os módulos oficiais serão disponibilizados aqui conforme forem publicados.</p>
+            </div>
+            <div class="candidate-access-grid" aria-label="Módulos do perfil">
+                <div class="candidate-access-card"><span class="quick-access-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 4.75h10.5A2.5 2.5 0 0 1 18 7.25v12H7.5A2.5 2.5 0 0 0 5 21.75v-17Z" /><path d="M5 4.75v17" /><path d="M8.5 8.5h6" /><path d="M8.5 12h6" /></svg></span><div><h3>Conteúdos</h3><p>Notícias, ações e informações oficiais.</p></div><small>Em breve</small></div>
+                <div class="candidate-access-card"><span class="quick-access-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2" /><path d="M8 3v4M16 3v4M4 10h16" /><path d="M8 14h.01M12 14h.01M16 14h.01" /></svg></span><div><h3>Agenda</h3><p>Compromissos e próximos encontros.</p></div><small>Em breve</small></div>
+                <div class="candidate-access-card"><span class="quick-access-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3.75h7l3 3v13.5H7a2 2 0 0 1-2-2v-12.5a2 2 0 0 1 2-2Z" /><path d="M14 3.75v4h3M8.5 12h7M8.5 15.5h7" /></svg></span><div><h3>Materiais</h3><p>Documentos e materiais para consulta.</p></div><small>Em breve</small></div>
+                <div class="candidate-access-card"><span class="quick-access-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" /><path d="M4.75 12h14.5M12 4a12.5 12.5 0 0 1 0 16M12 4a12.5 12.5 0 0 0 0 16" /></svg></span><div><h3>Redes oficiais</h3><p>Canais verificados de comunicação.</p></div><small>Em breve</small></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="candidate-home-cta" aria-labelledby="candidate-home-title">
+        <div class="public-shell"><div class="candidate-home-panel">
+            <div><p class="eyebrow">Plataforma Biondini</p><h2 id="candidate-home-title">Conheça também os demais representantes.</h2></div>
+            <a class="btn btn-gold" asp-controller="Home" asp-action="Index" asp-fragment="representantes">Ir para a Home</a>
+        </div></div>
+    </section>
+</article>
