@@ -22,7 +22,8 @@ public class CandidateController : Controller
             .AsNoTracking()
             .AsSplitQuery()
             .Include(x => x.Contents
-                .Where(content => content.IsPublished && content.Type == ContentType.Proposal)
+                .Where(content => content.IsPublished
+                    && (content.Type == ContentType.Proposal || content.Type == ContentType.Video))
                 .OrderByDescending(content => content.PublishedAt)
                 .ThenByDescending(content => content.Id))
             .Include(x => x.Events

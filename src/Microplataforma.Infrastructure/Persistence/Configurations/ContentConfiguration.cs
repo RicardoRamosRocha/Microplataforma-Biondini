@@ -20,6 +20,9 @@ public class ContentConfiguration : IEntityTypeConfiguration<Content>
         builder.Property(x => x.ImageUrl)
             .HasMaxLength(500);
 
+        builder.Property(x => x.VideoUrl)
+            .HasMaxLength(500);
+
         builder.Property(x => x.Type)
             .HasConversion<string>()
             .HasMaxLength(50)

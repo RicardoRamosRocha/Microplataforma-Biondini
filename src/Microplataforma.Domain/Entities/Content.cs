@@ -18,6 +18,8 @@ public class Content
 
     public string? ImageUrl { get; set; }
 
+    public string? VideoUrl { get; set; }
+
     public DateTimeOffset? PublishedAt { get; set; }
 
     public bool IsPublished { get; set; }
