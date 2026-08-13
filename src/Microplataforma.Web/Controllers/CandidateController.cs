@@ -29,6 +29,12 @@ public class CandidateController : Controller
                 .Where(candidateEvent => candidateEvent.StartsAt >= now)
                 .OrderBy(candidateEvent => candidateEvent.StartsAt)
                 .ThenBy(candidateEvent => candidateEvent.Id))
+            .Include(x => x.Materials
+                .OrderBy(material => material.Title)
+                .ThenBy(material => material.Id))
+            .Include(x => x.SocialLinks
+                .OrderBy(socialLink => socialLink.Platform)
+                .ThenBy(socialLink => socialLink.Id))
             .FirstOrDefaultAsync(x => x.Slug == slug && x.IsActive);
 
         if (candidate is null)

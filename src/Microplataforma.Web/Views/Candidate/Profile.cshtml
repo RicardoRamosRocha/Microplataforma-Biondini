@@ -9,6 +9,12 @@
     var hasShortBiography = !string.IsNullOrWhiteSpace(Model.ShortBiography);
     var proposals = Model.Contents.ToList();
     var agendaEvents = Model.Events.ToList();
+    var materials = Model.Materials.ToList();
+    var socialLinks = Model.SocialLinks
+        .Where(socialLink =>
+            Uri.TryCreate(socialLink.Url?.Trim(), UriKind.Absolute, out var socialUri)
+            && (socialUri.Scheme == Uri.UriSchemeHttps || socialUri.Scheme == Uri.UriSchemeHttp))
+        .ToList();
     var ptBrCulture = System.Globalization.CultureInfo.GetCultureInfo("pt-BR");
     var profileTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo");
     var biographyParagraphs = hasBiography
@@ -213,6 +219,174 @@
         </div>
     </section>
 
+    <section id="materiais" class="public-section candidate-materials-section" aria-labelledby="materials-title">
+        <div class="public-shell">
+            <header class="section-heading candidate-materials-heading">
+                <div>
+                    <p class="eyebrow">Para consultar</p>
+                    <h2 id="materials-title">Materiais</h2>
+                </div>
+                <p>Arquivos e documentos disponibilizados no perfil de @Model.Name.</p>
+            </header>
+
+            @if (materials.Count > 0)
+            {
+                <div class="candidate-materials-grid" aria-label="Materiais de @Model.Name">
+                    @foreach (var material in materials)
+                    {
+                        var fileUrl = material.FileUrl?.Trim();
+                        var fileIsAbsolute = Uri.TryCreate(fileUrl, UriKind.Absolute, out var absoluteFileUri);
+                        var fileIsExternal = fileIsAbsolute
+                            && (absoluteFileUri!.Scheme == Uri.UriSchemeHttps || absoluteFileUri.Scheme == Uri.UriSchemeHttp);
+                        var fileIsLocal = !fileIsAbsolute
+                            && !string.IsNullOrWhiteSpace(fileUrl)
+                            && fileUrl.StartsWith('/')
+                            && !fileUrl.StartsWith("//");
+                        var hasSafeFileUrl = fileIsExternal || fileIsLocal;
+
+                        var thumbnailUrl = material.ThumbnailUrl?.Trim();
+                        var thumbnailIsAbsolute = Uri.TryCreate(thumbnailUrl, UriKind.Absolute, out var absoluteThumbnailUri);
+                        var thumbnailIsExternal = thumbnailIsAbsolute
+                            && (absoluteThumbnailUri!.Scheme == Uri.UriSchemeHttps || absoluteThumbnailUri.Scheme == Uri.UriSchemeHttp);
+                        var thumbnailIsLocal = !thumbnailIsAbsolute
+                            && !string.IsNullOrWhiteSpace(thumbnailUrl)
+                            && thumbnailUrl.StartsWith('/')
+                            && !thumbnailUrl.StartsWith("//");
+                        var hasSafeThumbnail = thumbnailIsExternal || thumbnailIsLocal;
+
+                        <article class="candidate-material-card">
+                            <div class="candidate-material-thumbnail">
+                                @if (hasSafeThumbnail)
+                                {
+                                    <img src="@thumbnailUrl" alt="" loading="lazy" decoding="async" />
+                                }
+                                else
+                                {
+                                    <span aria-hidden="true">
+                                        <svg viewBox="0 0 24 24"><path d="M7 3.75h7l3 3v13.5H7a2 2 0 0 1-2-2v-12.5a2 2 0 0 1 2-2Z" /><path d="M14 3.75v4h3M8.5 12h7M8.5 15.5h7" /></svg>
+                                    </span>
+                                }
+                            </div>
+                            <div class="candidate-material-body">
+                                <h3>@material.Title</h3>
+                                @if (!string.IsNullOrWhiteSpace(material.Description))
+                                {
+                                    <p>@material.Description</p>
+                                }
+
+                                @if (hasSafeFileUrl)
+                                {
+                                    <a class="candidate-material-link"
+                                       href="@fileUrl"
+                                       target="_blank"
+                                       rel="noopener noreferrer"
+                                       aria-label="Acessar @material.Title (abre em nova aba)">
+                                        Acessar arquivo
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5h10v10M19 5 8 16" /><path d="M15 19H5V9" /></svg>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="candidate-material-unavailable">Arquivo indisponível</span>
+                                }
+                            </div>
+                        </article>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="candidate-materials-empty">
+                    <span class="candidate-materials-empty-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M7 3.75h7l3 3v13.5H7a2 2 0 0 1-2-2v-12.5a2 2 0 0 1 2-2Z" /><path d="M14 3.75v4h3M8.5 12h7M8.5 15.5h7" /></svg>
+                    </span>
+                    <div>
+                        <h3>Nenhum material disponível</h3>
+                        <p>Não há arquivos ou documentos publicados neste perfil no momento.</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+
+    <section id="redes" class="public-section candidate-social-section" aria-labelledby="social-title">
+        <div class="public-shell">
+            <header class="section-heading candidate-social-heading">
+                <div>
+                    <p class="eyebrow">Canais verificados</p>
+                    <h2 id="social-title">Redes oficiais</h2>
+                </div>
+                <p>Acesse os canais oficiais de @Model.Name.</p>
+            </header>
+
+            @if (socialLinks.Count > 0)
+            {
+                <div class="candidate-social-grid" aria-label="Redes oficiais de @Model.Name">
+                    @foreach (var socialLink in socialLinks)
+                    {
+                        var platform = string.IsNullOrWhiteSpace(socialLink.Platform) ? "Canal oficial" : socialLink.Platform.Trim();
+                        var platformKey = platform.ToLowerInvariant();
+                        var socialUrl = socialLink.Url.Trim();
+
+                        <a class="candidate-social-card"
+                           href="@socialUrl"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           aria-label="Acessar @platform de @Model.Name (abre em nova aba)">
+                            <span class="candidate-social-icon" aria-hidden="true">
+                                @if (platformKey.Contains("instagram"))
+                                {
+                                    <svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5" /><circle cx="12" cy="12" r="4" /><path d="M17.5 6.6h.01" /></svg>
+                                }
+                                else if (platformKey.Contains("facebook"))
+                                {
+                                    <svg viewBox="0 0 24 24"><path d="M13.5 21v-8h3l.5-3h-3.5V8.3c0-1 .35-1.8 1.85-1.8H17V3.8c-.6-.1-1.65-.2-2.8-.2-2.8 0-4.7 1.7-4.7 4.8V10H7v3h2.5v8" /></svg>
+                                }
+                                else if (platformKey.Contains("youtube"))
+                                {
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="4" /><path d="m10 9 5 3-5 3V9Z" /></svg>
+                                }
+                                else if (platformKey == "x" || platformKey.Contains("twitter"))
+                                {
+                                    <svg viewBox="0 0 24 24"><path d="m5 4 14 16M19 4 5 20" /></svg>
+                                }
+                                else if (platformKey.Contains("linkedin"))
+                                {
+                                    <svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="2" /><path d="M8 10v7M8 7.2v.1M12 17v-7M12 13a3 3 0 0 1 6 0v4" /></svg>
+                                }
+                                else if (platformKey.Contains("tiktok"))
+                                {
+                                    <svg viewBox="0 0 24 24"><path d="M14 4v11.5a4 4 0 1 1-3.2-3.92M14 4c.55 2.5 2 4 4.5 4.5" /></svg>
+                                }
+                                else
+                                {
+                                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" /><path d="M4.75 12h14.5M12 4a12.5 12.5 0 0 1 0 16M12 4a12.5 12.5 0 0 0 0 16" /></svg>
+                                }
+                            </span>
+                            <span class="candidate-social-copy">
+                                <strong>@platform</strong>
+                                <small>Acessar canal oficial</small>
+                            </span>
+                            <svg class="candidate-social-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5h10v10M19 5 8 16" /><path d="M15 19H5V9" /></svg>
+                        </a>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="candidate-social-empty">
+                    <span class="candidate-social-empty-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" /><path d="M4.75 12h14.5M12 4a12.5 12.5 0 0 1 0 16M12 4a12.5 12.5 0 0 0 0 16" /></svg>
+                    </span>
+                    <div>
+                        <h3>Nenhuma rede oficial disponível</h3>
+                        <p>Não há canais oficiais publicados neste perfil no momento.</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+
     <section id="acompanhe" class="public-section candidate-access-section" aria-labelledby="candidate-access-title">
         <div class="public-shell">
             <div class="section-heading candidate-access-heading">
@@ -222,8 +396,8 @@
             <div class="candidate-access-grid" aria-label="Módulos do perfil">
                 <div class="candidate-access-card"><span class="quick-access-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 4.75h10.5A2.5 2.5 0 0 1 18 7.25v12H7.5A2.5 2.5 0 0 0 5 21.75v-17Z" /><path d="M5 4.75v17" /><path d="M8.5 8.5h6" /><path d="M8.5 12h6" /></svg></span><div><h3>Conteúdos</h3><p>Notícias, ações e informações oficiais.</p></div><small>Em breve</small></div>
                 <a class="candidate-access-card candidate-access-card--link" href="#agenda"><span class="quick-access-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2" /><path d="M8 3v4M16 3v4M4 10h16" /><path d="M8 14h.01M12 14h.01M16 14h.01" /></svg></span><div><h3>Agenda</h3><p>Compromissos e próximos encontros.</p></div><small>Ver agenda</small></a>
-                <div class="candidate-access-card"><span class="quick-access-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3.75h7l3 3v13.5H7a2 2 0 0 1-2-2v-12.5a2 2 0 0 1 2-2Z" /><path d="M14 3.75v4h3M8.5 12h7M8.5 15.5h7" /></svg></span><div><h3>Materiais</h3><p>Documentos e materiais para consulta.</p></div><small>Em breve</small></div>
-                <div class="candidate-access-card"><span class="quick-access-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" /><path d="M4.75 12h14.5M12 4a12.5 12.5 0 0 1 0 16M12 4a12.5 12.5 0 0 0 0 16" /></svg></span><div><h3>Redes oficiais</h3><p>Canais verificados de comunicação.</p></div><small>Em breve</small></div>
+                <a class="candidate-access-card candidate-access-card--link" href="#materiais"><span class="quick-access-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3.75h7l3 3v13.5H7a2 2 0 0 1-2-2v-12.5a2 2 0 0 1 2-2Z" /><path d="M14 3.75v4h3M8.5 12h7M8.5 15.5h7" /></svg></span><div><h3>Materiais</h3><p>Documentos e materiais para consulta.</p></div><small>Ver materiais</small></a>
+                <a class="candidate-access-card candidate-access-card--link" href="#redes"><span class="quick-access-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" /><path d="M4.75 12h14.5M12 4a12.5 12.5 0 0 1 0 16M12 4a12.5 12.5 0 0 0 0 16" /></svg></span><div><h3>Redes oficiais</h3><p>Canais verificados de comunicação.</p></div><small>Ver redes</small></a>
             </div>
         </div>
     </section>
