@@ -21,6 +21,7 @@ public static class DbInitializer
                 Office = "Deputado Federal",
                 ShortBiography = "Informação oficial, trajetória e atuação parlamentar.",
                 Biography = string.Empty,
+                PhotoUrl = "/images/candidates/eros-biondini.png",
                 IsActive = true
             },
             new Candidate
@@ -30,6 +31,7 @@ public static class DbInitializer
                 Office = "Deputada Estadual",
                 ShortBiography = "Informação oficial, trajetória e atuação parlamentar.",
                 Biography = string.Empty,
+                PhotoUrl = "/images/candidates/chiara-biondini.png",
                 IsActive = true
             });
 
