@@ -1,49 +1,44 @@
 ﻿@model IReadOnlyList<Microplataforma.Domain.Entities.Candidate>
 
 @{
-    ViewData["Title"] = "Informação oficial e proximidade";
+    ViewData["Title"] = "Eros e Chiara Biondini";
+    ViewData["BodyClass"] = "home-app-page";
 }
 
-<section class="public-hero" aria-labelledby="hero-title">
-    <div class="public-shell">
-        <p class="eyebrow">Plataforma oficial</p>
-        <h1 id="hero-title">Informação, atuação e proximidade em um só lugar.</h1>
-        <p class="hero-copy">Uma forma simples de acompanhar informações oficiais e conhecer quem representa você.</p>
-        <a class="btn btn-gold" href="#representantes">Conheça os representantes</a>
-    </div>
-</section>
+<section class="home-app-hero" aria-labelledby="hero-title">
+    <div class="public-shell home-app-shell">
+        <header class="home-app-intro">
+            <p class="eyebrow">Plataforma oficial</p>
+            <h1 id="hero-title">Informação pública.<br />Sempre perto de você.</h1>
+            <span aria-hidden="true"></span>
+        </header>
 
-<section id="representantes" class="public-section representatives-section" aria-labelledby="representantes-title">
-    <div class="public-shell">
-        <div class="section-heading">
-            <p class="eyebrow">Representantes</p>
-            <h2 id="representantes-title">Conheça quem está perto de você</h2>
-        </div>
-
-        <div class="representatives-grid">
+        <div id="representantes" class="home-candidates" aria-label="Representantes">
             @foreach (var candidate in Model)
             {
                 var initial = string.IsNullOrWhiteSpace(candidate.Name) ? "B" : candidate.Name[..1].ToUpperInvariant();
 
-                <article class="representative-card">
-                    <div class="representative-image" aria-hidden="true">
+                <article class="home-candidate home-candidate--@candidate.Slug">
+                    <div class="home-candidate-photo">
                         @if (!string.IsNullOrWhiteSpace(candidate.PhotoUrl))
                         {
-                            <img src="@candidate.PhotoUrl" alt="" />
+                            <img src="@candidate.PhotoUrl" alt="@candidate.Name" />
                         }
                         else
                         {
-                            <span>@initial</span>
+                            <span aria-hidden="true">@initial</span>
                         }
                     </div>
-                    <div class="representative-body">
-                        <p class="representative-office">@candidate.Office</p>
-                        <h3>@candidate.Name</h3>
-                        @if (!string.IsNullOrWhiteSpace(candidate.ShortBiography))
-                        {
-                            <p class="representative-summary">@candidate.ShortBiography</p>
-                        }
-                        <a class="card-link" href="/@candidate.Slug" aria-label="Conheça @candidate.Name">Conheça <span aria-hidden="true">→</span></a>
+                    <div class="home-candidate-identity">
+                        <p>@candidate.Office</p>
+                        <h2>@candidate.Name</h2>
+                        <a class="home-candidate-cta"
+                           asp-route="candidate"
+                           asp-route-slug="@candidate.Slug"
+                           aria-label="Conheça @candidate.Name">
+                            Conheça @(candidate.Slug == "eros" ? "Eros" : candidate.Slug == "chiara" ? "Chiara" : candidate.Name)
+                            <span aria-hidden="true">→</span>
+                        </a>
                     </div>
                 </article>
             }
@@ -51,54 +46,20 @@
     </div>
 </section>
 
-<section class="public-section quick-access-section" aria-labelledby="acessos-title">
+<section class="home-app-shortcuts" aria-labelledby="acessos-title">
     <div class="public-shell">
-        <div class="section-heading">
-            <p class="eyebrow">Em um só lugar</p>
-            <h2 id="acessos-title">Acompanhe a plataforma</h2>
-        </div>
+        <header class="home-shortcuts-heading">
+            <p class="eyebrow">Acesso rápido</p>
+            <h2 id="acessos-title">Tudo em um só lugar</h2>
+        </header>
 
-        <div class="quick-access-grid" aria-label="Próximos conteúdos da plataforma">
-            <div class="quick-access-item">
-                <span class="quick-access-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 4.75h10.5A2.5 2.5 0 0 1 18 7.25v12H7.5A2.5 2.5 0 0 0 5 21.75v-17Z" /><path d="M5 4.75v17" /><path d="M8.5 8.5h6" /><path d="M8.5 12h6" /></svg></span>
-                <span class="quick-access-title">Trajetória</span>
-                <small>Em breve</small>
-            </div>
-            <div class="quick-access-item">
-                <span class="quick-access-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m7 12 3 3 7-7" /><path d="M20 12a8 8 0 1 1-4-6.93" /></svg></span>
-                <span class="quick-access-title">Propostas e compromissos</span>
-                <small>Em breve</small>
-            </div>
-            <div class="quick-access-item">
-                <span class="quick-access-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2" /><path d="m10 9 5 3-5 3V9Z" /></svg></span>
-                <span class="quick-access-title">Vídeos</span>
-                <small>Em breve</small>
-            </div>
-            <div class="quick-access-item">
-                <span class="quick-access-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2" /><path d="M8 3v4M16 3v4M4 10h16" /><path d="M8 14h.01M12 14h.01M16 14h.01" /></svg></span>
-                <span class="quick-access-title">Agenda</span>
-                <small>Em breve</small>
-            </div>
-            <div class="quick-access-item">
-                <span class="quick-access-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3.75h7l3 3v13.5H7a2 2 0 0 1-2-2v-12.5a2 2 0 0 1 2-2Z" /><path d="M14 3.75v4h3M8.5 12h7M8.5 15.5h7" /></svg></span>
-                <span class="quick-access-title">Materiais</span>
-                <small>Em breve</small>
-            </div>
-            <div class="quick-access-item">
-                <span class="quick-access-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" /><path d="M4.75 12h14.5M12 4a12.5 12.5 0 0 1 0 16M12 4a12.5 12.5 0 0 0 0 16" /></svg></span>
-                <span class="quick-access-title">Redes oficiais</span>
-                <small>Em breve</small>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="public-section final-cta-section" aria-labelledby="cta-title">
-    <div class="public-shell">
-        <div class="final-cta">
-            <p class="eyebrow">Informação oficial</p>
-            <h2 id="cta-title">Tudo o que importa, reunido com clareza.</h2>
-            <p>Esta plataforma organiza informações oficiais em um único ponto de acesso.</p>
+        <div class="home-shortcuts-grid" aria-label="Conteúdos disponíveis nos perfis">
+            <div class="home-shortcut-item"><span aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 4.75h10.5A2.5 2.5 0 0 1 18 7.25v12H7.5A2.5 2.5 0 0 0 5 21.75v-17Z" /><path d="M5 4.75v17M8.5 9h6M8.5 12.5h6" /></svg></span><strong>Trajetória</strong></div>
+            <div class="home-shortcut-item"><span aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m7 12 3 3 7-7" /><path d="M20 12a8 8 0 1 1-4-6.93" /></svg></span><strong>Propostas</strong></div>
+            <div class="home-shortcut-item"><span aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2" /><path d="m10 9 5 3-5 3V9Z" /></svg></span><strong>Vídeos</strong></div>
+            <div class="home-shortcut-item"><span aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2" /><path d="M8 3v4M16 3v4M4 10h16" /></svg></span><strong>Agenda</strong></div>
+            <div class="home-shortcut-item"><span aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3.75h7l3 3v13.5H7a2 2 0 0 1-2-2v-12.5a2 2 0 0 1 2-2Z" /><path d="M14 3.75v4h3M8.5 12h7M8.5 15.5h7" /></svg></span><strong>Materiais</strong></div>
+            <div class="home-shortcut-item"><span aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" /><path d="M4.75 12h14.5M12 4a12.5 12.5 0 0 1 0 16M12 4a12.5 12.5 0 0 0 0 16" /></svg></span><strong>Redes</strong></div>
         </div>
     </div>
 </section>
