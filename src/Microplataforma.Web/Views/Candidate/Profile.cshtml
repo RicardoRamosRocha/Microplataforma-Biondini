@@ -5,7 +5,17 @@
     var initial = string.IsNullOrWhiteSpace(Model.Name) ? "B" : Model.Name[..1].ToUpperInvariant();
     var hasHeroImage = !string.IsNullOrWhiteSpace(Model.HeroImageUrl);
     var profileImage = !string.IsNullOrWhiteSpace(Model.PhotoUrl) ? Model.PhotoUrl : Model.HeroImageUrl;
-    var biography = string.IsNullOrWhiteSpace(Model.Biography) ? Model.ShortBiography : Model.Biography;
+    var hasBiography = !string.IsNullOrWhiteSpace(Model.Biography);
+    var hasShortBiography = !string.IsNullOrWhiteSpace(Model.ShortBiography);
+    var proposals = Model.Contents.ToList();
+    var agendaEvents = Model.Events.ToList();
+    var ptBrCulture = System.Globalization.CultureInfo.GetCultureInfo("pt-BR");
+    var profileTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo");
+    var biographyParagraphs = hasBiography
+        ? Model.Biography
+            .Replace("\r\n", "\n")
+            .Split("\n\n", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        : [];
 }
 
 <article class="candidate-profile">
@@ -27,7 +37,7 @@
                 }
                 <div class="candidate-actions" aria-label="Atalhos do perfil">
                     <a class="btn btn-gold" href="#trajetoria">Conheça a trajetória</a>
-                    <a class="btn candidate-secondary-action" href="#acompanhe">Acompanhe a atuação</a>
+                    <a class="btn candidate-secondary-action" href="#propostas">Propostas e compromissos</a>
                 </div>
             </div>
             <div class="candidate-portrait" aria-label="Foto de @Model.Name">
@@ -46,18 +56,160 @@
 
     <section id="trajetoria" class="public-section candidate-story-section" aria-labelledby="trajectory-title">
         <div class="public-shell candidate-story-grid">
-            <div class="section-heading"><p class="eyebrow">Biografia</p><h2 id="trajectory-title">Uma trajetória de trabalho e proximidade</h2></div>
-            <div class="candidate-biography">
-                @if (!string.IsNullOrWhiteSpace(biography))
+            <header class="section-heading candidate-story-heading">
+                <p class="eyebrow">Trajetória</p>
+                <h2 id="trajectory-title">Trajetória de @Model.Name</h2>
+                <div class="candidate-story-identity">
+                    <span aria-hidden="true">@initial</span>
+                    <p><strong>@Model.Name</strong><small>@Model.Office</small></p>
+                </div>
+            </header>
+            <div class="candidate-biography" aria-label="Biografia de @Model.Name">
+                @if (hasShortBiography && (!hasBiography || !string.Equals(Model.ShortBiography.Trim(), Model.Biography.Trim(), StringComparison.Ordinal)))
                 {
-                    <p>@biography</p>
+                    <p class="candidate-biography-lead">@Model.ShortBiography</p>
+                }
+
+                @if (hasBiography)
+                {
+                    <div class="candidate-biography-copy">
+                        @foreach (var paragraph in biographyParagraphs)
+                        {
+                            <p>@paragraph</p>
+                        }
+                    </div>
                 }
                 else
                 {
-                    <p>As informações sobre a trajetória de @Model.Name serão reunidas neste perfil oficial.</p>
+                    <div class="candidate-biography-empty">
+                        <span class="candidate-biography-empty-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24"><path d="M6 4.75h9.5A2.5 2.5 0 0 1 18 7.25v12H8.5A2.5 2.5 0 0 0 6 21.75v-17Z" /><path d="M6 4.75v17" /><path d="M9.5 9h5M9.5 12.5h5" /></svg>
+                        </span>
+                        <div>
+                            <h3>Biografia ainda não publicada</h3>
+                            <p>A trajetória completa ainda não está disponível neste perfil.</p>
+                        </div>
+                    </div>
                 }
-                <p class="candidate-biography-note">Este é o espaço oficial para acompanhar a trajetória, a atuação e as iniciativas de @Model.Name.</p>
             </div>
+        </div>
+    </section>
+
+    <section id="propostas" class="public-section candidate-proposals-section" aria-labelledby="proposals-title">
+        <div class="public-shell">
+            <header class="section-heading candidate-proposals-heading">
+                <div>
+                    <p class="eyebrow">Atuação</p>
+                    <h2 id="proposals-title">Propostas e compromissos</h2>
+                </div>
+                <p>Conteúdos publicados no perfil de @Model.Name.</p>
+            </header>
+
+            @if (proposals.Count > 0)
+            {
+                <div class="candidate-proposals-grid" aria-label="Propostas e compromissos de @Model.Name">
+                    @foreach (var proposal in proposals)
+                    {
+                        <article class="candidate-proposal-card">
+                            <span class="candidate-proposal-label">Proposta</span>
+                            <h3>@proposal.Title</h3>
+                            @if (!string.IsNullOrWhiteSpace(proposal.Summary))
+                            {
+                                <p>@proposal.Summary</p>
+                            }
+                        </article>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="candidate-proposals-empty">
+                    <span class="candidate-proposals-empty-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M5 12.5 9 16l10-10" /><path d="M19 12a7.5 7.5 0 1 1-4.4-6.84" /></svg>
+                    </span>
+                    <div>
+                        <h3>Nenhuma proposta publicada</h3>
+                        <p>Não há propostas ou compromissos disponíveis neste perfil no momento.</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+
+    <section id="agenda" class="public-section candidate-agenda-section" aria-labelledby="agenda-title">
+        <div class="public-shell">
+            <header class="section-heading candidate-agenda-heading">
+                <div>
+                    <p class="eyebrow">Próximos eventos</p>
+                    <h2 id="agenda-title">Agenda</h2>
+                </div>
+                <p>Compromissos futuros publicados no perfil de @Model.Name.</p>
+            </header>
+
+            @if (agendaEvents.Count > 0)
+            {
+                <div class="candidate-agenda-grid" aria-label="Próximos eventos de @Model.Name">
+                    @foreach (var agendaEvent in agendaEvents)
+                    {
+                        var startsAt = TimeZoneInfo.ConvertTime(agendaEvent.StartsAt, profileTimeZone);
+                        var endsAt = agendaEvent.EndsAt.HasValue
+                            ? TimeZoneInfo.ConvertTime(agendaEvent.EndsAt.Value, profileTimeZone)
+                            : (DateTimeOffset?)null;
+                        var startIso = agendaEvent.StartsAt.ToString("O");
+                        var endIso = agendaEvent.EndsAt?.ToString("O");
+                        var accessibleStart = startsAt.ToString("f", ptBrCulture);
+                        var endLabel = endsAt.HasValue
+                            ? endsAt.Value.ToString(endsAt.Value.Date == startsAt.Date ? "HH:mm" : "dd/MM HH:mm", ptBrCulture)
+                            : string.Empty;
+
+                        <article class="candidate-event-card">
+                            <header class="candidate-event-header">
+                                <time class="candidate-event-date" datetime="@startIso" aria-label="@accessibleStart">
+                                    <strong>@startsAt.ToString("dd", ptBrCulture)</strong>
+                                    <span>@startsAt.ToString("MMM", ptBrCulture).TrimEnd('.').ToUpper(ptBrCulture)</span>
+                                    <small>@startsAt.ToString("yyyy", ptBrCulture)</small>
+                                </time>
+                                <div>
+                                    <p class="candidate-event-time">
+                                        <time datetime="@startIso">@startsAt.ToString("HH:mm", ptBrCulture)</time>
+                                        @if (endsAt.HasValue)
+                                        {
+                                            <span aria-hidden="true">—</span>
+                                            <time datetime="@endIso">@endLabel</time>
+                                        }
+                                    </p>
+                                    <h3>@agendaEvent.Title</h3>
+                                </div>
+                            </header>
+
+                            @if (!string.IsNullOrWhiteSpace(agendaEvent.Location))
+                            {
+                                <p class="candidate-event-location">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z" /><circle cx="12" cy="10" r="2" /></svg>
+                                    <span>@agendaEvent.Location</span>
+                                </p>
+                            }
+
+                            @if (!string.IsNullOrWhiteSpace(agendaEvent.Description))
+                            {
+                                <p class="candidate-event-description">@agendaEvent.Description</p>
+                            }
+                        </article>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="candidate-agenda-empty">
+                    <span class="candidate-agenda-empty-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2" /><path d="M8 3v4M16 3v4M4 10h16" /><path d="M8 14h.01M12 14h.01M16 14h.01" /></svg>
+                    </span>
+                    <div>
+                        <h3>Nenhum evento futuro</h3>
+                        <p>Não há compromissos publicados na agenda deste perfil no momento.</p>
+                    </div>
+                </div>
+            }
         </div>
     </section>
 
@@ -69,7 +221,7 @@
             </div>
             <div class="candidate-access-grid" aria-label="Módulos do perfil">
                 <div class="candidate-access-card"><span class="quick-access-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 4.75h10.5A2.5 2.5 0 0 1 18 7.25v12H7.5A2.5 2.5 0 0 0 5 21.75v-17Z" /><path d="M5 4.75v17" /><path d="M8.5 8.5h6" /><path d="M8.5 12h6" /></svg></span><div><h3>Conteúdos</h3><p>Notícias, ações e informações oficiais.</p></div><small>Em breve</small></div>
-                <div class="candidate-access-card"><span class="quick-access-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2" /><path d="M8 3v4M16 3v4M4 10h16" /><path d="M8 14h.01M12 14h.01M16 14h.01" /></svg></span><div><h3>Agenda</h3><p>Compromissos e próximos encontros.</p></div><small>Em breve</small></div>
+                <a class="candidate-access-card candidate-access-card--link" href="#agenda"><span class="quick-access-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2" /><path d="M8 3v4M16 3v4M4 10h16" /><path d="M8 14h.01M12 14h.01M16 14h.01" /></svg></span><div><h3>Agenda</h3><p>Compromissos e próximos encontros.</p></div><small>Ver agenda</small></a>
                 <div class="candidate-access-card"><span class="quick-access-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3.75h7l3 3v13.5H7a2 2 0 0 1-2-2v-12.5a2 2 0 0 1 2-2Z" /><path d="M14 3.75v4h3M8.5 12h7M8.5 15.5h7" /></svg></span><div><h3>Materiais</h3><p>Documentos e materiais para consulta.</p></div><small>Em breve</small></div>
                 <div class="candidate-access-card"><span class="quick-access-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" /><path d="M4.75 12h14.5M12 4a12.5 12.5 0 0 1 0 16M12 4a12.5 12.5 0 0 0 0 16" /></svg></span><div><h3>Redes oficiais</h3><p>Canais verificados de comunicação.</p></div><small>Em breve</small></div>
             </div>

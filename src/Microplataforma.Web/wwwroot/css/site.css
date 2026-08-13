@@ -581,35 +581,439 @@ button:focus-visible {
 }
 
 .candidate-story-section {
-  background: var(--white);
+  position: relative;
+  overflow: clip;
+  scroll-margin-top: 4.75rem;
+  background:
+    radial-gradient(circle at 100% 0, rgba(205, 166, 78, 0.1), transparent 24rem),
+    var(--white);
+}
+
+.candidate-story-section::after {
+  position: absolute;
+  top: 4.75rem;
+  right: -7rem;
+  width: 12rem;
+  height: 12rem;
+  border: 1px solid rgba(16, 42, 76, 0.07);
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
 }
 
 .candidate-story-grid {
+  position: relative;
+  z-index: 1;
   display: grid;
+  gap: 2.75rem;
+}
+
+.candidate-story-heading {
+  margin: 0;
+}
+
+.candidate-story-heading h2 {
+  max-width: 31rem;
+}
+
+.candidate-story-identity {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.candidate-story-identity > span {
+  width: 2.85rem;
+  height: 2.85rem;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--navy-deep);
+  background: var(--gold-light);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.candidate-story-identity p {
+  display: grid;
+  gap: 0.1rem;
+  margin: 0;
+}
+
+.candidate-story-identity strong {
+  color: var(--navy);
+  font-size: 0.94rem;
+}
+
+.candidate-story-identity small {
+  color: var(--muted);
+  font-size: 0.78rem;
 }
 
 .candidate-biography {
-  max-width: 720px;
+  max-width: 760px;
   color: #354257;
-  font-size: 1.08rem;
-  line-height: 1.75;
+  font-size: 1.04rem;
+  line-height: 1.8;
 }
 
 .candidate-biography p {
   margin: 0;
 }
 
-.candidate-biography p + p {
-  margin-top: 1.25rem;
+.candidate-biography-lead {
+  position: relative;
+  padding: 0 0 1.75rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--navy);
+  font-size: clamp(1.2rem, 5.4vw, 1.5rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.45;
 }
 
-.candidate-biography-note {
-  padding-left: 1rem;
-  border-left: 3px solid var(--gold);
+.candidate-biography-lead::before {
+  position: absolute;
+  top: 0.25rem;
+  bottom: 1.95rem;
+  left: 0;
+  width: 3px;
+  border-radius: 99px;
+  background: var(--gold);
+  content: "";
+}
+
+.candidate-biography-copy {
+  padding-top: 1.75rem;
+}
+
+.candidate-biography-copy p {
+  white-space: pre-line;
+}
+
+.candidate-biography-copy p + p {
+  margin-top: 1.4rem;
+}
+
+.candidate-biography-empty {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem;
+  padding: 1.35rem;
+  border: 1px solid var(--border);
+  border-radius: 1.15rem;
+  background: rgba(246, 247, 249, 0.82);
+}
+
+.candidate-biography-empty-icon {
+  width: 2.75rem;
+  height: 2.75rem;
+  display: grid;
+  place-items: center;
+  border-radius: 0.85rem;
+  color: var(--navy);
+  background: var(--gold-light);
+}
+
+.candidate-biography-empty-icon svg {
+  width: 1.35rem;
+  height: 1.35rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+
+.candidate-biography-empty h3 {
+  margin: 0;
+  color: var(--navy);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.candidate-biography-empty p {
+  margin-top: 0.35rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.candidate-proposals-section {
+  scroll-margin-top: 4.75rem;
+  background: var(--surface);
+}
+
+.candidate-proposals-heading {
+  display: grid;
+  gap: 1rem;
+}
+
+.candidate-proposals-heading > p {
+  max-width: 30rem;
+  margin: 0;
+  color: var(--muted);
+}
+
+.candidate-proposals-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.candidate-proposal-card {
+  position: relative;
+  min-height: 13.5rem;
+  overflow: hidden;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  background: var(--white);
+  box-shadow: 0 0.65rem 1.75rem rgba(16, 42, 76, 0.06);
+}
+
+.candidate-proposal-card::after {
+  position: absolute;
+  right: -2rem;
+  bottom: -3.5rem;
+  width: 8rem;
+  height: 8rem;
+  border: 1px solid rgba(205, 166, 78, 0.2);
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
+}
+
+.candidate-proposal-label {
+  display: inline-flex;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  color: var(--navy);
+  background: var(--gold-light);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.candidate-proposal-card h3 {
+  position: relative;
+  z-index: 1;
+  margin: 1.2rem 0 0;
+  color: var(--navy);
+  font-size: clamp(1.25rem, 5.5vw, 1.55rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.candidate-proposal-card p {
+  position: relative;
+  z-index: 1;
+  margin: 0.85rem 0 0;
   color: var(--muted);
   font-size: 0.94rem;
+  line-height: 1.65;
 }
 
+.candidate-proposals-empty,
+.candidate-agenda-empty {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem;
+  max-width: 48rem;
+  padding: 1.35rem;
+  border: 1px solid var(--border);
+  border-radius: 1.15rem;
+  background: var(--white);
+  box-shadow: 0 0.65rem 1.75rem rgba(16, 42, 76, 0.04);
+}
+
+.candidate-proposals-empty-icon,
+.candidate-agenda-empty-icon {
+  width: 2.75rem;
+  height: 2.75rem;
+  display: grid;
+  place-items: center;
+  border-radius: 0.85rem;
+  color: var(--navy);
+  background: var(--gold-light);
+}
+
+.candidate-proposals-empty-icon svg,
+.candidate-agenda-empty-icon svg {
+  width: 1.4rem;
+  height: 1.4rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.candidate-proposals-empty h3,
+.candidate-agenda-empty h3 {
+  margin: 0;
+  color: var(--navy);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.candidate-proposals-empty p,
+.candidate-agenda-empty p {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.candidate-agenda-section {
+  scroll-margin-top: 4.75rem;
+  background: var(--white);
+}
+
+.candidate-agenda-heading {
+  display: grid;
+  gap: 1rem;
+}
+
+.candidate-agenda-heading > p {
+  max-width: 30rem;
+  margin: 0;
+  color: var(--muted);
+}
+
+.candidate-agenda-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.candidate-event-card {
+  padding: 1.35rem;
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  background: var(--surface);
+}
+
+.candidate-event-header {
+  display: grid;
+  grid-template-columns: 4.25rem minmax(0, 1fr);
+  align-items: start;
+  gap: 1rem;
+}
+
+.candidate-event-date {
+  min-height: 5rem;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  padding: 0.55rem 0.35rem;
+  border-radius: 0.9rem;
+  color: var(--white);
+  background: var(--navy);
+  line-height: 1;
+  text-align: center;
+}
+
+.candidate-event-date strong {
+  font-size: 1.65rem;
+  letter-spacing: -0.04em;
+}
+
+.candidate-event-date span {
+  margin-top: 0.25rem;
+  color: var(--gold-light);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.candidate-event-date small {
+  margin-top: 0.3rem;
+  color: #cbd5e1;
+  font-size: 0.68rem;
+}
+
+.candidate-event-time {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0;
+  color: #8b6b24;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.candidate-event-card h3 {
+  margin: 0.45rem 0 0;
+  color: var(--navy);
+  font-size: clamp(1.15rem, 5vw, 1.4rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+}
+
+.candidate-event-location {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 1.1rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  color: var(--navy);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.candidate-event-location svg {
+  width: 1.05rem;
+  height: 1.05rem;
+  flex: 0 0 auto;
+  margin-top: 0.1rem;
+  fill: none;
+  stroke: var(--gold);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.candidate-event-description {
+  margin: 0.75rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.candidate-agenda-empty {
+  max-width: 48rem;
+  background: var(--surface);
+}
+
+.candidate-agenda-empty-icon {
+  background: var(--gold-light);
+}
+
+.candidate-access-card--link {
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+
+.candidate-access-card--link:hover {
+  color: inherit;
+  border-color: rgba(205, 166, 78, 0.65);
+  transform: translateY(-0.2rem);
+  box-shadow: 0 0.9rem 2rem rgba(16, 42, 76, 0.1);
+}
+
+.candidate-access-card--link small {
+  color: var(--navy);
+  background: var(--gold-light);
+}
 .candidate-access-heading > p {
   max-width: 520px;
   margin: 1rem 0 0;
@@ -695,6 +1099,14 @@ button:focus-visible {
     width: auto;
   }
 
+  .candidate-agenda-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .candidate-proposals-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .candidate-access-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -723,12 +1135,68 @@ button:focus-visible {
     max-height: 36rem;
   }
 
+  .candidate-story-section {
+    scroll-margin-top: 5.25rem;
+  }
+
   .candidate-story-grid {
-    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-    gap: 5rem;
+    grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
+    gap: 6rem;
     align-items: start;
   }
 
+  .candidate-story-heading {
+    position: sticky;
+    top: 7.5rem;
+  }
+
+  .candidate-biography {
+    min-height: 18rem;
+    padding: 0.35rem 0 0 3.5rem;
+    border-left: 1px solid var(--border);
+    font-size: 1.1rem;
+  }
+
+  .candidate-biography-lead {
+    font-size: 1.5rem;
+  }
+
+  .candidate-proposals-section {
+    scroll-margin-top: 5.25rem;
+  }
+
+  .candidate-proposals-heading {
+    grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.55fr);
+    align-items: end;
+    gap: 4rem;
+  }
+
+  .candidate-proposals-heading > p {
+    margin-bottom: 0.35rem;
+  }
+
+  .candidate-proposal-card {
+    min-height: 15rem;
+    padding: 2rem;
+  }
+
+  .candidate-agenda-section {
+    scroll-margin-top: 5.25rem;
+  }
+
+  .candidate-agenda-heading {
+    grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.55fr);
+    align-items: end;
+    gap: 4rem;
+  }
+
+  .candidate-agenda-heading > p {
+    margin-bottom: 0.35rem;
+  }
+
+  .candidate-event-card {
+    padding: 1.75rem;
+  }
   .candidate-access-heading {
     display: flex;
     align-items: end;

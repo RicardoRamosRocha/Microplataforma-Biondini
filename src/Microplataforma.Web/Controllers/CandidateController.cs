@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microplataforma.Domain.Enums;
 using Microplataforma.Infrastructure.Persistence;
 
 namespace Microplataforma.Web.Controllers;
@@ -15,8 +16,19 @@ public class CandidateController : Controller
 
     public async Task<IActionResult> Profile(string slug)
     {
+        var now = DateTimeOffset.UtcNow;
+
         var candidate = await _context.Candidates
             .AsNoTracking()
+            .AsSplitQuery()
+            .Include(x => x.Contents
+                .Where(content => content.IsPublished && content.Type == ContentType.Proposal)
+                .OrderByDescending(content => content.PublishedAt)
+                .ThenByDescending(content => content.Id))
+            .Include(x => x.Events
+                .Where(candidateEvent => candidateEvent.StartsAt >= now)
+                .OrderBy(candidateEvent => candidateEvent.StartsAt)
+                .ThenBy(candidateEvent => candidateEvent.Id))
             .FirstOrDefaultAsync(x => x.Slug == slug && x.IsActive);
 
         if (candidate is null)
